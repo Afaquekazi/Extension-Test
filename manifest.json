@@ -12,11 +12,6 @@
     "activeTab",
     "storage"
   ],
-  "host_permissions": [
-    "https://afaque.pythonanywhere.com/*",
-    "https://solthron.com/*",
-    "https://www.solthron.com/*"
-  ],
   "background": {
     "service_worker": "background.js"
   },
