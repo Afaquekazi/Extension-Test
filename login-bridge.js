@@ -61,29 +61,14 @@ function forwardTokenToExtension(token, source) {
         }, '*');
         
         console.log('✅ Token forwarded to extension from:', source);
-        showLoginFeedback(source);
+        // ❌ REMOVED: showLoginFeedback(source);
         
     } catch (error) {
         console.error('❌ Error forwarding token:', error);
     }
 }
 
-function showLoginFeedback(source) {
-    const feedback = document.createElement('div');
-    feedback.style.cssText = `
-        position: fixed; top: 20px; right: 20px;
-        background: #4CAF50; color: white; padding: 15px 20px;
-        border-radius: 8px; z-index: 10000; font-weight: bold;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    `;
-    feedback.innerHTML = `✅ Extension login successful!<br><small>Source: ${source}</small>`;
-    document.body.appendChild(feedback);
-    
-    setTimeout(() => feedback.remove(), 5000);
-}
-
-// REMOVED: localStorage override (LoginPage.js already handles this)
-// This prevents the "originalSetItem already declared" error
+// ❌ REMOVED: showLoginFeedback function entirely
 
 // Initialize token detection
 function initialize() {
