@@ -190,7 +190,7 @@ def optional_credit_check(feature_mode):
 
         # If no auth token, allow free usage (backwards compatibility)
         if not auth_header or not auth_header.startswith('Bearer '):
-            return {'success': True, 'message': 'Free usage - no auth provided'}
+            return {'success': False, 'message': 'Authentication required'}
 
         # If auth token provided, verify and check credits
         token = auth_header[7:]
@@ -739,7 +739,7 @@ def debug_routes():
         })
     return jsonify({'routes': routes})
 
-@app.route('/test-convert', methods=['POST'])  
+@app.route('/test-convert', methods=['POST'])
 def test_convert():
     """Simple test for convert functionality"""
     try:
@@ -1009,7 +1009,7 @@ Transform this text into a detailed prompt that leaves no room for ambiguity whi
                     ],
                     temperature=0.3
                 )
-                
+
                 result = {
                     'prompt': response.choices[0].message.content,
                     'status': 'success',
@@ -1021,7 +1021,7 @@ Transform this text into a detailed prompt that leaves no room for ambiguity whi
                     result['credits_remaining'] = credit_result.get('remaining')
 
                 return jsonify(result)
-                
+
             except Exception as e:
                 return jsonify({'error': str(e), 'status': 'error'}), 500
 
@@ -1093,17 +1093,43 @@ def generate_image_prompt():
         data = request.get_json(force=True)
         image_url = data.get('image')
 
-        universal_prompt = """Analyze this image and provide output in this exact format:
+        universal_prompt = """Analyze this image with extreme thoroughness and precision. Examine every single visual element, no matter how minute. Study the image as if you need to recreate it perfectly from memory. Provide output in this exact format:
 
-Description: [2-line brief description of explaining the details of the image]
-Subject: [main subject, pose, expressions, clothing]
-Environment: [setting, time, conditions]
-Lighting: [light sources, shadows, highlights]
-Style: [artistic style, medium, textures]
-Composition: [camera angle, perspective, framing]
-Technical: [quality] --ar [aspect ratio] --v 5.2
-Mood: [atmosphere, emotional tone]
-Extra: [unique elements]"""
+Description: [4-5 line comprehensive description capturing the complete scene, all subjects, actions, and significant visual elements in detail]
+
+Primary Subject(s): [main subject(s) with detailed description - pose, body language, facial expressions, age estimation, gender, ethnicity if apparent, clothing brand/style/condition, accessories, jewelry, footwear, hair style/color, makeup, gestures, what they're doing/holding]
+
+Secondary Elements: [people, animals, or objects in background/periphery with their positions, actions, and details]
+
+Environment/Setting: [specific location type, indoor/outdoor, architectural style, room type, landscape features, weather conditions, season indicators, time of day evidence, geographical clues, cultural context]
+
+Colors & Visual Palette: [dominant colors, accent colors, color harmony, saturation levels, color temperature (warm/cool), specific color names, color distribution across image]
+
+Lighting Analysis: [light source type (natural/artificial), direction (front/back/side), intensity (harsh/soft), quality (diffused/direct), shadows (hard/soft), highlights, reflections, ambient lighting, contrast levels]
+
+Materials & Textures: [fabric types, surface materials, texture quality (smooth/rough/glossy/matte), material condition (new/worn/damaged), patterns, weaves, finishes]
+
+Style & Technique: [photography style, artistic medium, visual technique, filter effects, processing style, camera type indicators, lens characteristics, depth of field, bokeh quality]
+
+Composition & Framing: [camera angle (high/low/eye level), perspective (wide/close-up/macro), framing (tight/loose), rule of thirds application, leading lines, symmetry/asymmetry, balance, focal points, negative space usage]
+
+Technical Quality: [image resolution indicators, sharpness, noise levels, compression artifacts, dynamic range, exposure quality] --ar [width:height ratio] --v 5.2
+
+Text & Graphics: [any visible text (exact words), fonts, signs, labels, logos, brand names, symbols, graphics, artwork, posters, screens, digital displays]
+
+Spatial Relationships: [how objects relate to each other, size comparisons, distance relationships, layering (foreground/midground/background), overlap patterns, perspective cues]
+
+Motion & Action: [any movement indicators, blur patterns, action sequences, dynamic elements, static vs moving elements]
+
+Mood & Atmosphere: [emotional tone, energy level, ambiance, psychological impact, cultural mood, formality level, tension/relaxation]
+
+Temporal Indicators: [time period clues, historical markers, technology visible, fashion era, architectural period, anachronisms]
+
+Fine Details: [small background objects, wear patterns, aging signs, scratches/damage, reflections in surfaces, shadows of unseen objects, partial text, edge details, corner elements, pattern specifics, brand markings, serial numbers, dates, signatures]
+
+Anomalies & Unique Features: [anything unusual, unexpected, hidden elements, visual tricks, easter eggs, inconsistencies, artistic choices, creative elements, surreal aspects]
+
+Do not use afterrisks in the output"""
 
         response = client.chat.completions.create(
             model="chatgpt-4o-latest",
